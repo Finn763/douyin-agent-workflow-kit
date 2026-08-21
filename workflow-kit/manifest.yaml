@@ -1,0 +1,28 @@
+name: douyin-ai-science-auto-publish-kit
+version: 0.1.0
+language: zh-CN
+purpose: "抖音 AI 科普图文自动发布工作流"
+default_account_type: douyin
+default_content_type: note
+default_note_images: 3
+default_image_size:
+  width: 1080
+  height: 1440
+required_stages:
+  - collect_hotspots
+  - select_hotspot
+  - write_note
+  - build_image_prompts
+  - generate_images
+  - validate_assets
+  - publish_note
+  - record_result
+publisher_contract:
+  must_select_related_hotspot: true
+  must_wait_all_images_uploaded: true
+  must_handle_cover: true
+  should_select_music: true
+security:
+  store_passwords: false
+  store_cookies_in_package: false
+  require_manual_login: true

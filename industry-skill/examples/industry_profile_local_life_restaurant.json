@@ -1,0 +1,22 @@
+{
+  "industry": "local restaurant marketing",
+  "audience": "nearby diners looking for meals, gatherings, and seasonal food",
+  "positioning": "friendly local food guide with practical dining suggestions",
+  "offer_policy": {
+    "direct_sales_allowed": true,
+    "avoid_phrases": ["全网最低", "包治", "官方指定"]
+  },
+  "brand_terms": ["店名可在这里填写"],
+  "visual_elements": {
+    "required": ["realistic food scene", "clean table setting", "local neighborhood feeling"],
+    "forbidden": ["overly fake luxury style", "blurred borders", "messy kitchen"]
+  },
+  "keywords": ["美食", "周末", "世界杯", "端午", "亲子"],
+  "topics_target": 3,
+  "post_count": 6,
+  "images_per_post": 3,
+  "tone": "warm, concrete, local-life",
+  "content_formats": ["scenario recommendation", "menu checklist", "myth-busting", "weekend plan"],
+  "fallback_policy": "If no exact local hotspot exists, use a broader food or weekend topic and publish with no hotspot only after user approval.",
+  "language": "zh-CN"
+}

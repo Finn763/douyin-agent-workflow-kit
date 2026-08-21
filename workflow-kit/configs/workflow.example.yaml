@@ -1,0 +1,45 @@
+account_positioning:
+  niche: "AI科普"
+  audience: "对人工智能、智能体、自动化工具感兴趣的普通用户和潜在客户"
+  required_association:
+    - OpenClaw
+    - Hermes
+  forbidden_style:
+    - "直接说提供安装服务"
+    - "夸大承诺"
+    - "敏感或攻击性表达"
+
+content_rules:
+  content_type: note
+  note_images: 3
+  image_ratio: "3:4"
+  image_size: "1080x1440"
+  title_max_chars: 30
+  body_target_chars: "150-500"
+  tags:
+    - AI科普
+    - 智能体
+    - OpenClaw
+    - Hermes
+
+hotspot_rules:
+  source: "douyin_creator_publish_page"
+  prefer:
+    - AI
+    - 科技
+    - 智能设备
+    - 商业
+    - 工具效率
+  avoid:
+    - 强娱乐八卦
+    - 高风险社会事件
+    - 医疗法律金融承诺
+
+publish_rules:
+  select_related_hotspot: true
+  select_music: true
+  handle_cover: true
+  visibility: public
+  save_permission: allow
+  schedule: immediate
+

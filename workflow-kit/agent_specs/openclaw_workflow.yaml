@@ -1,0 +1,61 @@
+name: douyin_ai_science_publish_workflow
+description: "抖音 AI 科普图文自动发布工作流"
+inputs:
+  project_path: string
+  account_alias: string
+  publisher_config: string
+  image_generator: string
+nodes:
+  - id: collect_hotspots
+    type: browser_or_publisher_action
+    instruction: "从抖音发布页读取关联热点列表，至少尝试读取 50 个。"
+    outputs:
+      - hotspots
+  - id: select_hotspot
+    type: llm
+    prompt_file: prompts/01_hotspot_picker.md
+    inputs:
+      - hotspots
+    outputs:
+      - selected_hotspot
+  - id: write_note
+    type: llm
+    prompt_file: prompts/02_content_writer.md
+    inputs:
+      - selected_hotspot
+    outputs:
+      - note_json
+  - id: build_image_prompts
+    type: llm
+    prompt_file: prompts/03_image_prompt_builder.md
+    inputs:
+      - note_json
+    outputs:
+      - image_prompts
+  - id: generate_images
+    type: image_generator
+    inputs:
+      - image_prompts
+    outputs:
+      - image_paths
+  - id: write_plan
+    type: file_action
+    instruction: "写入 drafts 和 schedules/publish_plan.csv。"
+    inputs:
+      - note_json
+      - image_paths
+  - id: validate_assets
+    type: command
+    command: "python tools/check_note_ready.py --project {project_path} --id {plan_id}"
+  - id: publish_note
+    type: command
+    command: "python tools/publish_with_sau.py --project {project_path} --id {plan_id} --social-root {social_auto_upload_root}"
+  - id: record_result
+    type: file_action
+    instruction: "把发布结果写入 logs/publish_log.csv。"
+failure_policy:
+  hotspot_not_found: stop
+  image_upload_timeout: stop
+  validation_failed: stop
+  publish_failed: stop
+

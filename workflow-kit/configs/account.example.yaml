@@ -1,0 +1,9 @@
+display_name: "你的抖音昵称"
+account_alias: "your-account-alias"
+platform: douyin
+creator_center_login_required: true
+notes:
+  - "不要在本文件保存密码。"
+  - "不要在本文件保存验证码、短信、扫码信息。"
+  - "cookie 应由发布器自己管理，不放进工作流包。"
+

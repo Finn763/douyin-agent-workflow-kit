@@ -1,0 +1,3 @@
+display_name: Douyin Industry Auto Publisher
+short_description: Search Douyin hotspots, generate industry-specific note content and image plans, and publish with hotspot/BGM checks.
+default_prompt: Use this skill to run a configurable Douyin auto-publishing batch for my industry. Ask for or load my industry profile, search related hotspots, generate post content and image prompts, then publish with matching hotspot and BGM verification.

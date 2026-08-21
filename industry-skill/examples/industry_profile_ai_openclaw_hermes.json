@@ -1,0 +1,22 @@
+{
+  "industry": "AI agent workflow and deployment education",
+  "audience": "Chinese Douyin users curious about practical AI agents",
+  "positioning": "AI science explainer focused on workflows, tools, and real use cases",
+  "offer_policy": {
+    "direct_sales_allowed": false,
+    "avoid_phrases": ["安装服务", "包部署", "保证效果", "官方合作"]
+  },
+  "brand_terms": ["OpenClaw", "Hermes"],
+  "visual_elements": {
+    "required": ["red lobster mascot representing OpenClaw", "white horse or hologram horse representing Hermes", "workflow boards or task cards"],
+    "forbidden": ["blurred borders", "generic stock-photo look", "phone screenshot frame as the main cover"]
+  },
+  "keywords": ["AI", "Claude", "Codex", "OpenAI", "智能体"],
+  "topics_target": 4,
+  "post_count": 8,
+  "images_per_post": 3,
+  "tone": "clear, practical, educational",
+  "content_formats": ["checklist", "workflow explanation", "mistake analysis", "tool comparison"],
+  "fallback_policy": "If fewer than target hotspots are found, distribute all posts across found hotspots. If none are found, search broader AI keywords before asking the user.",
+  "language": "zh-CN"
+}

@@ -1,0 +1,16 @@
+publisher: social-auto-upload
+social_auto_upload_root: "C:/path/to/social-auto-upload"
+python_command: ".venv/Scripts/python.exe"
+cli_entry: "sau_cli.py"
+douyin_account_alias: "your-account-alias"
+env:
+  SAU_DOUYIN_AUTO_MUSIC: "1"
+  SAU_DOUYIN_HOTSPOT_LIMIT: "50"
+  SAU_DOUYIN_HOTSPOT_SCROLLS: "6"
+features_required:
+  - douyin list-hotspots
+  - douyin upload-note --hotspot
+  - wait all note images uploaded
+  - auto select music
+  - auto confirm note cover
+
