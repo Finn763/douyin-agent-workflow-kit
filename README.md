@@ -5,6 +5,8 @@ An **agent-agnostic workflow kit** for AI-powered Douyin (抖音) image-note aut
 It is **not** another one-off upload script. It is a workflow engineering kit: every stage is a prompt/contract/schema, so you can swap the model, the agent system, the image generator, or the publisher independently.
 
 > 📄 **中文摘要**：一套不绑定特定智能体与模型的抖音图文自动发布工作流——读取实时热点、按行业画像生成图文、AI 直出带字主封面 + Pillow 渲染支撑卡片（统一 3:4 竖版 1080×1440）、发布时重搜热点校验、选不上即停发、BGM 验证歌名+时长、账号凭证零落盘。内置 AI 科普与本地生活餐饮两类行业示例，支持 OpenClaw / Hermes 等 Agent 系统一键迁移部署。
+>
+> 📖 完整中文版请见 [README.zh-CN.md](README.zh-CN.md)。
 
 ![License](https://img.shields.io/badge/License-MIT-blue.svg)
 ![Python](https://img.shields.io/badge/Python-3.9%2B-3776AB.svg)
