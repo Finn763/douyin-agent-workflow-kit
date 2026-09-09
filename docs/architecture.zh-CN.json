@@ -1,0 +1,314 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "抖音智能体工作流包",
+    "locale": "zh-CN",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/Finn763/douyin-agent-workflow-kit",
+      "revision": "a819552a0a676bf7b61de3a56b99c9ad13b5ecdb"
+    },
+    "viewBox": [
+      1240,
+      640
+    ],
+    "views": [
+      {
+        "id": "pipeline",
+        "label": "流水线",
+        "focus": [
+          "profile",
+          "hot",
+          "write",
+          "imgs",
+          "check",
+          "pub",
+          "log"
+        ],
+        "note": "左边进画像，右边出一篇发布加一条日志。"
+      },
+      {
+        "id": "safety",
+        "label": "安全",
+        "focus": [
+          "pub",
+          "guard",
+          "sau"
+        ],
+        "note": "发布外包，中止规则写死。"
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "profile",
+      "type": "external",
+      "label": "行业画像",
+      "sublabel": "受众 + 关键词",
+      "pos": [
+        40,
+        320
+      ],
+      "size": [
+        120,
+        68
+      ]
+    },
+    {
+      "id": "hot",
+      "type": "backend",
+      "label": "热点",
+      "sublabel": "搜索 + 挑选",
+      "pos": [
+        208,
+        320
+      ],
+      "size": [
+        120,
+        68
+      ],
+      "sources": [
+        {
+          "path": "workflow-kit/prompts/01_hotspot_picker.md",
+          "label": "热点挑选"
+        }
+      ]
+    },
+    {
+      "id": "write",
+      "type": "backend",
+      "label": "图文",
+      "sublabel": "角度 + 文案",
+      "pos": [
+        376,
+        320
+      ],
+      "size": [
+        120,
+        68
+      ],
+      "sources": [
+        {
+          "path": "workflow-kit/prompts/02_content_writer.md",
+          "label": "文案撰写"
+        }
+      ]
+    },
+    {
+      "id": "imgs",
+      "type": "backend",
+      "label": "图片",
+      "sublabel": "AI 封面 + 卡片",
+      "pos": [
+        544,
+        320
+      ],
+      "size": [
+        120,
+        68
+      ],
+      "sources": [
+        {
+          "path": "workflow-kit/prompts/03_image_prompt_builder.md",
+          "label": "提示词构建"
+        }
+      ]
+    },
+    {
+      "id": "check",
+      "type": "backend",
+      "label": "校验",
+      "sublabel": "质检 + 合规",
+      "pos": [
+        712,
+        320
+      ],
+      "size": [
+        120,
+        68
+      ],
+      "sources": [
+        {
+          "path": "workflow-kit/prompts/04_compliance_checker.md",
+          "label": "合规检查"
+        }
+      ]
+    },
+    {
+      "id": "pub",
+      "type": "backend",
+      "label": "发布",
+      "sublabel": "重搜热点",
+      "pos": [
+        880,
+        320
+      ],
+      "size": [
+        120,
+        68
+      ],
+      "sources": [
+        {
+          "path": "workflow-kit/prompts/05_publisher_agent.md",
+          "label": "发布执行"
+        }
+      ]
+    },
+    {
+      "id": "log",
+      "type": "backend",
+      "label": "记录",
+      "sublabel": "CSV + 截图",
+      "pos": [
+        1048,
+        320
+      ],
+      "size": [
+        120,
+        68
+      ]
+    },
+    {
+      "id": "sau",
+      "type": "external",
+      "label": "发布器 CLI",
+      "sublabel": "social-auto-upload",
+      "pos": [
+        865,
+        130
+      ],
+      "size": [
+        150,
+        60
+      ],
+      "sources": [
+        {
+          "path": "workflow-kit/adapters/social-auto-upload/publisher_contract.md",
+          "label": "发布器契约"
+        }
+      ]
+    },
+    {
+      "id": "guard",
+      "type": "security",
+      "label": "中止规则",
+      "sublabel": "选不上就停发",
+      "pos": [
+        865,
+        500
+      ],
+      "size": [
+        150,
+        60
+      ],
+      "sources": [
+        {
+          "path": "workflow-kit/WORKFLOW.md",
+          "label": "稳定性规则"
+        }
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "流水线：画像到日志",
+      "wraps": [
+        "profile",
+        "hot",
+        "write",
+        "imgs",
+        "check",
+        "pub",
+        "log"
+      ]
+    },
+    {
+      "kind": "security-group",
+      "label": "安全：外包发布，机械中止",
+      "wraps": [
+        "guard",
+        "pub"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "from": "profile",
+      "to": "hot"
+    },
+    {
+      "from": "hot",
+      "to": "write"
+    },
+    {
+      "from": "write",
+      "to": "imgs"
+    },
+    {
+      "from": "imgs",
+      "to": "check"
+    },
+    {
+      "from": "check",
+      "to": "pub"
+    },
+    {
+      "from": "pub",
+      "to": "log"
+    },
+    {
+      "from": "sau",
+      "to": "pub",
+      "label": "委托发布",
+      "labelAt": [
+        990,
+        225
+      ],
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "from": "guard",
+      "to": "pub",
+      "label": "中止",
+      "variant": "security",
+      "labelAt": [
+        990,
+        445
+      ],
+      "fromSide": "top",
+      "toSide": "bottom"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "rose",
+      "title": "为什么不是脚本",
+      "items": [
+        "上传脚本给一个账号写死流程，页面一改就失效",
+        "这里每阶段都是提示词、契约或模式，各部件独立替换"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "写死了什么",
+      "items": [
+        "热点在真实发布页重搜，搜不到就停，绝不硬发",
+        "BGM 必须歌名加时长同时出现；封面加上传双门禁",
+        "凭证零落盘：人工登录，会话由发布器自己管理"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "什么都能换",
+      "items": [
+        "模型、智能体、图片生成器、发布器，各自可替换",
+        "行业画像 JSON 把流程泛化到任意赛道",
+        "日志落文件（CSV 加截图），不打在聊天里"
+      ]
+    }
+  ]
+}

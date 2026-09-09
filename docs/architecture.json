@@ -1,0 +1,314 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "douyin-agent-workflow-kit",
+    "locale": "en",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/Finn763/douyin-agent-workflow-kit",
+      "revision": "a819552a0a676bf7b61de3a56b99c9ad13b5ecdb"
+    },
+    "viewBox": [
+      1240,
+      640
+    ],
+    "views": [
+      {
+        "id": "pipeline",
+        "label": "Pipeline",
+        "focus": [
+          "profile",
+          "hot",
+          "write",
+          "imgs",
+          "check",
+          "pub",
+          "log"
+        ],
+        "note": "Profile in, published note plus CSV log out."
+      },
+      {
+        "id": "safety",
+        "label": "Safety",
+        "focus": [
+          "pub",
+          "guard",
+          "sau"
+        ],
+        "note": "Delegated publishing, mechanical abort rules."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "profile",
+      "type": "external",
+      "label": "Industry profile",
+      "sublabel": "audience+keywords",
+      "pos": [
+        40,
+        320
+      ],
+      "size": [
+        120,
+        68
+      ]
+    },
+    {
+      "id": "hot",
+      "type": "backend",
+      "label": "Hotspots",
+      "sublabel": "search + pick",
+      "pos": [
+        208,
+        320
+      ],
+      "size": [
+        120,
+        68
+      ],
+      "sources": [
+        {
+          "path": "workflow-kit/prompts/01_hotspot_picker.md",
+          "label": "hotspot picker"
+        }
+      ]
+    },
+    {
+      "id": "write",
+      "type": "backend",
+      "label": "Note",
+      "sublabel": "angle + copy",
+      "pos": [
+        376,
+        320
+      ],
+      "size": [
+        120,
+        68
+      ],
+      "sources": [
+        {
+          "path": "workflow-kit/prompts/02_content_writer.md",
+          "label": "content writer"
+        }
+      ]
+    },
+    {
+      "id": "imgs",
+      "type": "backend",
+      "label": "Images",
+      "sublabel": "AI cover + cards",
+      "pos": [
+        544,
+        320
+      ],
+      "size": [
+        120,
+        68
+      ],
+      "sources": [
+        {
+          "path": "workflow-kit/prompts/03_image_prompt_builder.md",
+          "label": "prompt builder"
+        }
+      ]
+    },
+    {
+      "id": "check",
+      "type": "backend",
+      "label": "Validate",
+      "sublabel": "QA + compliance",
+      "pos": [
+        712,
+        320
+      ],
+      "size": [
+        120,
+        68
+      ],
+      "sources": [
+        {
+          "path": "workflow-kit/prompts/04_compliance_checker.md",
+          "label": "compliance check"
+        }
+      ]
+    },
+    {
+      "id": "pub",
+      "type": "backend",
+      "label": "Publish",
+      "sublabel": "re-search hotspot",
+      "pos": [
+        880,
+        320
+      ],
+      "size": [
+        120,
+        68
+      ],
+      "sources": [
+        {
+          "path": "workflow-kit/prompts/05_publisher_agent.md",
+          "label": "publisher agent"
+        }
+      ]
+    },
+    {
+      "id": "log",
+      "type": "backend",
+      "label": "Record",
+      "sublabel": "CSV + screenshot",
+      "pos": [
+        1048,
+        320
+      ],
+      "size": [
+        120,
+        68
+      ]
+    },
+    {
+      "id": "sau",
+      "type": "external",
+      "label": "Publisher CLI",
+      "sublabel": "social-auto-upload",
+      "pos": [
+        865,
+        130
+      ],
+      "size": [
+        150,
+        60
+      ],
+      "sources": [
+        {
+          "path": "workflow-kit/adapters/social-auto-upload/publisher_contract.md",
+          "label": "publisher contract"
+        }
+      ]
+    },
+    {
+      "id": "guard",
+      "type": "security",
+      "label": "Abort rules",
+      "sublabel": "no hotspot = stop",
+      "pos": [
+        865,
+        500
+      ],
+      "size": [
+        150,
+        60
+      ],
+      "sources": [
+        {
+          "path": "workflow-kit/WORKFLOW.md",
+          "label": "stability rules"
+        }
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Pipeline: profile to log",
+      "wraps": [
+        "profile",
+        "hot",
+        "write",
+        "imgs",
+        "check",
+        "pub",
+        "log"
+      ]
+    },
+    {
+      "kind": "security-group",
+      "label": "Safety: delegated publish, mechanical abort",
+      "wraps": [
+        "guard",
+        "pub"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "from": "profile",
+      "to": "hot"
+    },
+    {
+      "from": "hot",
+      "to": "write"
+    },
+    {
+      "from": "write",
+      "to": "imgs"
+    },
+    {
+      "from": "imgs",
+      "to": "check"
+    },
+    {
+      "from": "check",
+      "to": "pub"
+    },
+    {
+      "from": "pub",
+      "to": "log"
+    },
+    {
+      "from": "sau",
+      "to": "pub",
+      "label": "Delegates",
+      "labelAt": [
+        990,
+        225
+      ],
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "from": "guard",
+      "to": "pub",
+      "label": "Abort",
+      "variant": "security",
+      "labelAt": [
+        990,
+        445
+      ],
+      "fromSide": "top",
+      "toSide": "bottom"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "rose",
+      "title": "Why not a script",
+      "items": [
+        "Upload scripts hard-code one account and break on page changes",
+        "Every stage here is a prompt, a contract, or a schema — swap parts independently"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "What's enforced",
+      "items": [
+        "Hotspot re-searched live; gone means stop, never force",
+        "BGM counts only with title plus duration; cover plus upload gates",
+        "Zero credential storage: manual login, publisher owns its session"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Swap anything",
+      "items": [
+        "Model, agent system, image generator, publisher — each replaceable",
+        "Industry profile JSON generalizes the flow to any niche",
+        "Logs in files (CSV plus screenshots), not in chat"
+      ]
+    }
+  ]
+}
