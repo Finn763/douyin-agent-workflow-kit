@@ -1,79 +1,63 @@
+<div align="center">
+
 # Douyin Agent Workflow Kit
 
-An **agent-agnostic workflow kit** for AI-powered Douyin (抖音) image-note auto-publishing. Turn the full "hotspot → note → images → publish → log" pipeline into a reusable, industry-configurable workflow that runs inside [OpenClaw](https://github.com/openclaw/openclaw), [Hermes](https://github.com/NousResearch/hermes-agent), Codex, or any agent system that can browse the Douyin Creator Center and call local scripts.
+*Not another upload script. A workflow engineering kit for Douyin publishing.*
 
-It is **not** another one-off upload script. It is a workflow engineering kit: every stage is a prompt/contract/schema, so you can swap the model, the agent system, the image generator, or the publisher independently.
+[![License: MIT](https://img.shields.io/badge/License-MIT-3fb950?style=flat-square&labelColor=black)](LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/Finn763/douyin-agent-workflow-kit?style=flat-square&logo=github&labelColor=black)](https://github.com/Finn763/douyin-agent-workflow-kit/stargazers)
+[![Python](https://img.shields.io/badge/Python-3.9%2B-3776AB?style=flat-square&labelColor=black)](#install)
+[![Douyin](https://img.shields.io/badge/Platform-Douyin-161823?style=flat-square&labelColor=black)](#how-it-runs)
 
-> 📄 **中文摘要**：一套不绑定特定智能体与模型的抖音图文自动发布工作流——读取实时热点、按行业画像生成图文、AI 直出带字主封面 + Pillow 渲染支撑卡片（统一 3:4 竖版 1080×1440）、发布时重搜热点校验、选不上即停发、BGM 验证歌名+时长、账号凭证零落盘。内置 AI 科普与本地生活餐饮两类行业示例，支持 OpenClaw / Hermes 等 Agent 系统一键迁移部署。
->
-> 📖 完整中文版请见 [README.zh-CN.md](README.zh-CN.md)。
+[中文](README.zh-CN.md) | English
 
-![License](https://img.shields.io/badge/License-MIT-blue.svg)
-![Python](https://img.shields.io/badge/Python-3.9%2B-3776AB.svg)
-![Douyin](https://img.shields.io/badge/Platform-Douyin-161823.svg)
+</div>
+
+> Most Douyin automation repos are single-purpose upload scripts that break when the page changes. This kit inverts the problem: every stage is a prompt, a contract, or a schema — swap the model, the agent, the image generator, or the publisher independently.
+
+An **agent-agnostic workflow kit** for AI-powered Douyin (抖音) image-note auto-publishing. Five specialized agents cover eight pipeline stages — hotspot → note → images → publish → log — driven by an industry-profile JSON that generalizes the whole flow to any niche. Runs inside [OpenClaw](https://github.com/openclaw/openclaw), [Hermes](https://github.com/NousResearch/hermes-agent), Codex, or any agent system that can browse the Douyin Creator Center and call local scripts.
+
+---
+
+## How it runs
+
+![douyin pipeline](docs/architecture.svg)
+
+Profile in on the left, published note plus CSV log on the right. [▶ Interactive version](https://finn763.github.io/douyin-agent-workflow-kit/architecture.html)
+
+1. **Profile** — industry JSON sets audience, positioning, keywords, visual rules (`industry-skill/examples/` has AI-science and restaurant starters).
+2. **Hotspots ①②** — search Douyin related-hotspots by keyword, pick real usable ones (`prompts/01_hotspot_picker.md`).
+3. **Note ③** — write the copy from a fresh angle per post; same hotspot never means same layout (`02_content_writer.md`).
+4. **Images ④⑤** — AI model renders the cover with baked-in Chinese text; Pillow deterministically renders two support cards. All 3:4 vertical, 1080×1440 (`03_image_prompt_builder.md` + `render_support_cards.py`).
+5. **Validate ⑥** — compliance checker gates every asset before anything touches the publish page (`04_compliance_checker.md`).
+6. **Publish ⑦** — the publisher re-searches the hotspot on the live page; gone means stop, never force (`05_publisher_agent.md` + publisher contract).
+7. **Record ⑧** — per-post CSV log plus failure screenshots. Logs live in files, not in chat.
 
 ---
 
 ## Why this kit
 
-Most Douyin automation repos on GitHub are single-purpose upload scripts (PyAutoGUI / Playwright) that break when the page changes. This kit inverts the problem:
-
 | Typical upload script | This kit |
 |---|---|
 | Hard-coded flow for one account | Industry profile JSON generalizes to any niche |
 | Bound to one agent / model | Prompt + contract per stage, works with OpenClaw / Hermes / Codex |
-| Publishes whatever you give it | Validates assets before publishing; **aborts if the hotspot can't be selected** |
+| Publishes whatever you give it | Validates assets first; **aborts if the hotspot can't be selected** |
 | Stores cookies/tokens in config | **Zero credential storage** — manual login, publisher owns its session |
-| No image QA | Enforces 3:4 vertical (1080×1440), bans blurred-border/stretched covers |
+| No image QA | Enforces 3:4 vertical, bans blurred-border/stretched covers |
 | Logs in chat | Structured per-post CSV logs, failure screenshots |
 
-## Architecture
+Reliability rules baked into the pipeline, not suggested in comments:
 
-Five specialized agents cover eight pipeline stages:
+- **Hotspot re-verification** — re-searched on the live publish page; gone means stop.
+- **BGM verification** — a track counts as selected only with title **and** duration on screen.
+- **Cover + upload gates** — all images uploaded, cover confirmed, or nothing ships.
+- **Credentials** — no passwords, cookies, QR data, or browser profiles ever live in the kit.
 
-```mermaid
-flowchart TD
-    P[Industry Profile JSON<br/>audience / positioning / keywords] --> S1
-    S1["① collect hotspots<br/>(hotspot picker)"] --> S2["② select hotspot<br/>(hotspot picker)"]
-    S2 --> S3["③ write note<br/>(content writer)"]
-    S3 --> S4["④ build image prompts<br/>(image prompt builder)"]
-    S4 --> S5["⑤ generate images<br/>AI cover + Pillow support cards"]
-    S5 --> S6["⑥ validate assets<br/>(compliance checker)"]
-    S6 --> S7["⑦ publish<br/>(publisher agent, re-search hotspot)"]
-    S7 --> S8["⑧ record result<br/>CSV log + failure screenshot"]
-```
+---
 
-Key reliability rules baked into the pipeline:
+## Install
 
-- **Hotspot re-verification** — the hotspot is re-searched on the live publish page before selecting; if it is gone, publishing stops instead of forcing it.
-- **BGM verification** — a music track counts as selected only when the page shows a title **and** a duration.
-- **Credentials** — no passwords, cookies, QR-login data, or browser profiles ever live in the kit.
-- **Image QA** — 3:4 vertical enforced, cover text baked in by the image model, support cards rendered deterministically with Pillow.
-
-## Repository layout
-
-```
-douyin-agent-workflow-kit/
-├── workflow-kit/              # Generic workflow package (docs in Chinese)
-│   ├── agent_specs/           # Task specs for OpenClaw / Hermes / generic agents
-│   ├── adapters/              # Publisher adapter contracts (social-auto-upload)
-│   ├── configs/               # Config examples (account / publisher / workflow)
-│   ├── prompts/               # Reusable per-stage prompts (5 agents)
-│   ├── templates/project/     # Scaffolded project layout (assets, drafts, logs…)
-│   ├── tools/                 # init / validate / demo-images / publish scripts
-│   └── workflow/              # Stage definitions & I/O contracts
-│
-└── industry-skill/            # Industry-configurable agent skill (docs in English)
-    ├── SKILL.md               # Main skill: safety rules, workflow, rules
-    ├── agents/openai.yaml     # Agent manifest for OpenAI-compatible setups
-    ├── examples/              # 2 ready-made industry profiles (AI science, restaurant)
-    ├── references/            # content / image / publish / industry-config rules
-    └── scripts/               # batch planning, support-card rendering, publish wrapper
-```
-
-## Quick start
-
-### Option A — scaffold a new project (workflow-kit)
+### Option A — scaffold a project (workflow-kit)
 
 ```bash
 # Windows
@@ -83,47 +67,67 @@ python workflow-kit/tools/init_project.py --target C:\douyin-ai-project --accoun
 python3 workflow-kit/tools/init_project.py --target ~/douyin-ai-project --account-alias my-alias --display-name "My Douyin Name"
 ```
 
-Then validate a draft and publish one row:
+Validate a draft, then publish one row:
 
 ```bash
 python workflow-kit/tools/check_note_ready.py --project . --id demo
 python workflow-kit/tools/publish_with_sau.py --project . --id demo --social-root /path/to/social-auto-upload
 ```
 
-See `workflow-kit/INSTALL.md` for the full walkthrough.
+Full walkthrough: `workflow-kit/INSTALL.md`.
 
 ### Option B — drop the skill into your agent (industry-skill)
 
-1. Copy `industry-skill/` into your agent's skills directory (or package it however your system loads skills).
+1. Copy `industry-skill/` into your agent's skills directory.
 2. Provide an industry profile JSON (start from `industry-skill/examples/`).
 3. Ask the agent to run the Douyin publishing workflow for your niche.
 
-The full spec is in `industry-skill/SKILL.md`.
+Full spec: `industry-skill/SKILL.md`.
 
-## Publisher adapter
+---
 
-Publishing is delegated to a **publisher** through a small contract (`workflow-kit/adapters/social-auto-upload/`), so you can use any automation tool. The reference implementation targets [dreammis/social-auto-upload](https://github.com/dreammis/social-auto-upload) (a 9k+ star multi-platform uploader) via its CLI.
+## What's inside
 
-## Related projects / prior art
+| | |
+|---|---|
+| Agents | 5 specialized prompts (hotspot picker, content writer, image prompt builder, compliance checker, publisher) |
+| Stages | 8, defined in `workflow-kit/workflow/stages.md` with I/O contracts in `io_contract.md` |
+| Publisher | Delegated through a small contract (`adapters/social-auto-upload/`); reference target is [dreammis/social-auto-upload](https://github.com/dreammis/social-auto-upload) CLI |
+| Industry packs | 2 ready-made profiles: AI science, local-life restaurant |
+| Runtime | None of its own — Python 3.9+ scripts plus whatever agent and publisher you already run |
 
-| Project | What it is |
+---
+
+## Repo layout
+
+```
+workflow-kit/               # generic workflow package (docs in Chinese)
+├── prompts/                # 5 per-stage agent prompts
+├── workflow/               # stage definitions + I/O contracts
+├── adapters/               # publisher adapter contracts
+├── configs/                # account / publisher / workflow examples
+├── templates/project/      # scaffolded project layout
+├── tools/                  # init / validate / demo-images / publish scripts
+└── agent_specs/            # task specs for OpenClaw / Hermes / generic agents
+industry-skill/             # industry-configurable agent skill (docs in English)
+├── SKILL.md                # safety rules, workflow, content/image/publish rules
+├── references/             # content / image / publish / industry-config rules
+├── examples/               # 2 industry profiles
+└── scripts/                # batch planning, card rendering, publish wrapper
+docs/architecture.*         # the diagram above (svg + spec json + interactive html)
+```
+
+## Related work
+
+| Project | Relation |
 |---|---|
 | [dreammis/social-auto-upload](https://github.com/dreammis/social-auto-upload) | The uploader itself — this kit is a workflow layer on top of it |
-| [withwz/douyin_upload](https://github.com/withwz/douyin_upload) | PyAutoGUI upload script |
-| Various `douyin-auto-publish` repos | Single-purpose scripts, no workflow/industry abstraction |
-
-This kit's differentiator: the publishing decision chain (hotspot re-search, BGM verification, abort conditions) and the industry-profile abstraction make it usable as a genuine multi-agent workflow, not just a form filler.
+| [withwz/douyin_upload](https://github.com/withwz/douyin_upload) | PyAutoGUI upload script, no workflow abstraction |
 
 ## Disclaimer
 
-⚠️ This project is for **educational and technical research purposes only**. Automated publishing may violate Douyin's Terms of Service ("抖音用户服务协议" §5.1 prohibits using automated programs to access the platform). By using this software you agree that:
-
-1. You will comply with the platform's terms and applicable laws; use at your own risk.
-2. Any account restriction, ban, or penalty is solely your responsibility.
-3. Keep publishing frequency low; this kit intentionally aborts rather than forces publishing when conditions are not met.
-
-The authors are not liable for any consequences of using this software.
+⚠️ For **educational and technical research purposes only**. Automated publishing may violate Douyin's Terms of Service ("抖音用户服务协议" §5.1 prohibits automated access). By using this software you agree that you comply with platform terms and applicable laws at your own risk; any restriction, ban, or penalty is solely your responsibility; and you keep publishing frequency low — this kit aborts rather than forces publishing when conditions are not met. The authors are not liable for any consequences.
 
 ## License
 
-MIT © 2026 Finn763 — see [LICENSE](LICENSE).
+[MIT](LICENSE) © 2026 Finn763
